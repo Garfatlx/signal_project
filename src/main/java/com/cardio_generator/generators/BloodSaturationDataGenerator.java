@@ -19,10 +19,10 @@ public class BloodSaturationDataGenerator implements PatientDataGenerator {
 
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {
-        try {
+        try { 
             // Simulate blood saturation values
             int variation = random.nextInt(3) - 1; // -1, 0, or 1 to simulate small fluctuations
-            int newSaturationValue = lastSaturationValues[patientId] + variation;
+            int newSaturationValue =lastSaturationValues[patientId] + variation;
 
             // Ensure the saturation stays within a realistic and healthy range
             newSaturationValue = Math.min(Math.max(newSaturationValue, 90), 100);
