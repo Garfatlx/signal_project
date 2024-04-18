@@ -65,7 +65,7 @@ java -jar target/target/cardio_generator-1.0-SNAPSHOT.jar --patient-count 100 --
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Addition
-- add a class diagram in a newly create uml_models folder. 
+- add a class diagram in a newly create uml_models folder. https://github.com/Garfatlx/signal_project/tree/master/uml_models
 
 ## Project Members
 - Student ID: i6372972
