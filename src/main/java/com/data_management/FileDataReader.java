@@ -21,9 +21,10 @@ public class FileDataReader implements DataReader {
                 while ((line=reader.readLine())!=null) {
                     String[] tokens=line.split(":|,|%");
                     if (tokens[5].trim().equals("Alert")) {
+                        dataStorage.addPatientData(Integer.parseInt(tokens[1].trim()), 0, tokens[5].trim(), Long.parseLong(tokens[3].trim()));
                         continue;
                     }
-                    dataStorage.addPatientData(Integer.parseInt(tokens[2].trim()), Double.parseDouble(tokens[7].trim()), tokens[5].trim(), Long.parseLong(tokens[3].trim()));
+                    dataStorage.addPatientData(Integer.parseInt(tokens[1].trim()), Double.parseDouble(tokens[7].trim()), tokens[5].trim(), Long.parseLong(tokens[3].trim()));
                 }
             }
 
