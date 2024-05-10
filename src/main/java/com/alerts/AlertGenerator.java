@@ -120,6 +120,9 @@ public class AlertGenerator {
         this.alertLog.add(alert);
         System.out.println(alert.getCondition());
     }
+    public ArrayList<Alert> getAlerts(){
+        return this.alertLog;
+    }
 
     /**
      * Checker for the consective change in blood pressure
@@ -138,7 +141,6 @@ public class AlertGenerator {
             this.consectiveIncrestedCount=0;
             this.stepThreshold=stepThreshold;
         }
-
         /**
          * evaluate the new data in. 
          * @param record newly added data
@@ -158,13 +160,14 @@ public class AlertGenerator {
                     this.consectiveIncrestedCount=0;
                     this.consectiveDecrestedCount=0;
                 }
+                this.currentData=record;
             }
             if (this.consectiveDecrestedCount>=this.countWindow) {
-                this.message="consective decreased";
+                this.message="consectively decreased";
                 return true;
             }
             if (this.consectiveIncrestedCount>=this.countWindow) {
-                this.message="consective increased";
+                this.message="consectively increased";
                 return true;
             }
             return false;
@@ -179,7 +182,7 @@ public class AlertGenerator {
      */
     private class SaturationDropChecker{
         private PriorityQueue<PatientRecord> records=new PriorityQueue<>((PatientRecord a, PatientRecord b)-> 
-                Double.compare(a.getMeasurementValue(),b.getMeasurementValue()));
+                Double.compare(b.getMeasurementValue(),a.getMeasurementValue()));
         /**
          * evaluate new data
          * @param record new feed in data
@@ -191,8 +194,13 @@ public class AlertGenerator {
             }else{
                 // remove the maximum in the records if it older than 10 mins from the new added data
                 // until the maximum is within the 10min range.
-                while (records.peek().getTimestamp()<record.getTimestamp()-600000L && !records.isEmpty()) {
-                    records.poll();
+                while (!records.isEmpty()) {
+                        if (records.peek().getTimestamp()<record.getTimestamp()-600000L) {
+                            records.poll();
+                            continue;
+                        }else{
+                            break;
+                        }
                 }
                 records.add(record);
                 // Compare with the maximum
