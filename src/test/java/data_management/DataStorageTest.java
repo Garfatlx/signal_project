@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import com.data_management.DataStorage;
 import com.alerts.AlertGenerator;
+import com.cardio_generator.HealthDataSimulator;
 import com.data_management.DataReader;
 import com.data_management.FileDataReader;
 import com.data_management.PatientRecord;
 
+import java.io.IOException;
 import java.util.List;
 
 class DataStorageTest {
@@ -62,6 +64,7 @@ class DataStorageTest {
         storage.addPatientData(1, 170.0, "SystolicPressure", 1714376789054L);
         storage.addPatientData(1, 155.0, "SystolicPressure", 1714376789054L);
         storage.addPatientData(1, 85.0, "SystolicPressure", 1714376789054L);
+        storage.addPatientData(1, 85.0, "SystolicPressure", 1714376789054L);
 
         alertGenerator.evaluateData(storage.getAllPatients().get(0));
 
@@ -84,6 +87,7 @@ class DataStorageTest {
         storage.addPatientData(1, 93.0, "Saturation", 1714376789052L);
         storage.addPatientData(1, 99.0, "Saturation", 1714376789053L);
         storage.addPatientData(1, 93.0, "Saturation", 1714377789053L);
+        storage.addPatientData(1,0.2, "ECG", 1714377789053L);
         alertGenerator.evaluateData(storage.getAllPatients().get(0));
 
         // check if trigger low saturation alert
@@ -98,6 +102,7 @@ class DataStorageTest {
         AlertGenerator alertGenerator=new AlertGenerator(storage);
         storage.addPatientData(1, 91.0, "Saturation", 1714376789050L);
         storage.addPatientData(1, 89.0, "SystolicPressure", 1714376789050L);
+        storage.addPatientData(1, 91.0, "Saturation", 1714376789050L);
 
         alertGenerator.evaluateData(storage.getAllPatients().get(0));
 
@@ -118,7 +123,17 @@ class DataStorageTest {
         assertEquals("Alert!", alertGenerator.getAlerts().get(0).getCondition());
     }
 
+    @Test
+    void testFileReader() throws IOException{
+        DataStorage storage = new DataStorage();
+        FileDataReader reader=new FileDataReader("D:\\ProgrammingProjects\\outputtest", "");
+        reader.readData(storage);
+        
+        List<PatientRecord> records = storage.getRecords(20, 1700000000000L, 1800000000000L);
+        assertEquals(12, records.size()); // Check if 12 records are retrieved
+        assertEquals(78.0, records.get(0).getMeasurementValue()); // Validate first record
+    }
 
-
+    
 
 }

@@ -29,7 +29,7 @@ public class HealthDataSimulator {
 
     private static int patientCount = 50; // Default number of patients
     private static ScheduledExecutorService scheduler;
-    private static OutputStrategy outputStrategy = new FileOutputStrategy("D:\\ProgrammingProjects\\outputtest"); // Default output strategy
+    private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
     private static final Random random = new Random();
 
     public static void main(String[] args) throws IOException {
@@ -42,6 +42,24 @@ public class HealthDataSimulator {
         Collections.shuffle(patientIds); // Randomize the order of patient IDs
 
         scheduleTasksForPatients(patientIds);
+
+        // // Stop the simulation after 5 seconds
+        // ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        // Runnable task = () -> {
+        //     try {
+        //         scheduler.shutdown();
+        //         scheduler.awaitTermination(1, TimeUnit.SECONDS);
+        //     } catch (Exception e) {
+        //     }
+        // };
+        // executor.schedule(task, 5, TimeUnit.SECONDS);
+        // try {
+        //     executor.shutdown();
+        //     executor.awaitTermination(2, TimeUnit.SECONDS);
+        // } catch (Exception e) {
+        // }
+        
+        
     }
 
     private static void parseArguments(String[] args) throws IOException {

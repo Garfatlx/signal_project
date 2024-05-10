@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AlertGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cardio_generator</a> &gt; <a href="index.source.html" class="el_package">com.alerts</a> &gt; <span class="el_source">AlertGenerator.java</span></div><h1>AlertGenerator.java</h1><pre class="source lang-java linenums">package com.alerts;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+import com.data_management.DataStorage;
+import com.data_management.Patient;
+import com.data_management.PatientRecord;
+
+/**
+ * The {@code AlertGenerator} class is responsible for monitoring patient data
+ * and generating alerts when certain predefined conditions are met. This class
+ * relies on a {@link DataStorage} instance to access patient data and evaluate
+ * it against specific health criteria.
+ */
+public class AlertGenerator {
+    private DataStorage dataStorage;
+<span class="fc" id="L23">    private ArrayList&lt;Alert&gt; alertLog=new ArrayList&lt;&gt;();</span>
+
+    /**
+     * Constructs an {@code AlertGenerator} with a specified {@code DataStorage}.
+     * The {@code DataStorage} is used to retrieve patient data that this class
+     * will monitor and evaluate.
+     *
+     * @param dataStorage the data storage system that provides access to patient
+     *                    data
+     */
+<span class="fc" id="L33">    public AlertGenerator(DataStorage dataStorage) {</span>
+<span class="fc" id="L34">        this.dataStorage = dataStorage;</span>
+<span class="fc" id="L35">    }</span>
+
+    /**
+     * Evaluates the specified patient's data to determine if any alert conditions
+     * are met. If a condition is met, an alert is triggered via the
+     * {@link #triggerAlert}
+     * method. This method should define the specific conditions under which an
+     * alert
+     * will be triggered.
+     *
+     * @param patient the patient data to evaluate for alert conditions
+     */
+    public void evaluateData(Patient patient) {
+        // Implementation goes here
+<span class="fc" id="L49">        List&lt;PatientRecord&gt; evaluateRecords = patient.getRecords(1700000000000L, 1800000000000L);</span>
+        
+<span class="fc" id="L51">        SuccessiveChangeChecker diastolicTrackor=new SuccessiveChangeChecker(3, 10);</span>
+<span class="fc" id="L52">        SuccessiveChangeChecker systolicTrackor=new SuccessiveChangeChecker(3, 10);</span>
+<span class="fc" id="L53">        SaturationDropChecker saturationTrackor=new SaturationDropChecker();</span>
+<span class="fc" id="L54">        HypotensiveHypoxemiaChecker combinedTrackor= new HypotensiveHypoxemiaChecker();</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (PatientRecord record : evaluateRecords) {</span>
+<span class="pc bpc" id="L57" title="1 of 6 branches missed.">            switch (record.getRecordType()) {</span>
+                case &quot;DiastolicPressure&quot;:
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                    if(diastolicTrackor.addData(record.getMeasurementValue())){</span>
+<span class="fc" id="L60">                        String condition=String.join(&quot; &quot;, &quot;Diastolic Pressure&quot;,diastolicTrackor.getMessage());</span>
+<span class="fc" id="L61">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), condition, record.getTimestamp()));</span>
+                    }
+<span class="fc bfc" id="L63" title="All 2 branches covered.">                    if (record.getMeasurementValue()&gt;120 ) {</span>
+<span class="fc" id="L64">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Diastolic Pressure over 120 mmHg&quot;, record.getTimestamp()));</span>
+                    }
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                    if (record.getMeasurementValue()&lt;60 ) {</span>
+<span class="fc" id="L67">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Diastolic Pressure less than 60 mmHg&quot;, record.getTimestamp()));</span>
+                    }
+                    break;
+                case &quot;SystolicPressure&quot;:
+<span class="fc bfc" id="L71" title="All 2 branches covered.">                    if(systolicTrackor.addData(record.getMeasurementValue())){</span>
+<span class="fc" id="L72">                        String condition=String.join(&quot; &quot;, &quot;Systolic Pressure&quot;,systolicTrackor.getMessage());</span>
+<span class="fc" id="L73">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), condition, record.getTimestamp()));</span>
+                    }
+<span class="fc bfc" id="L75" title="All 2 branches covered.">                    if (record.getMeasurementValue()&gt;180 ) {</span>
+<span class="fc" id="L76">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Systolic Pressure over 180 mmHg&quot;, record.getTimestamp()));</span>
+                    }
+<span class="fc bfc" id="L78" title="All 2 branches covered.">                    if (record.getMeasurementValue()&lt;90 ) {</span>
+<span class="fc" id="L79">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Systolic Pressure less than 90 mmHg&quot;, record.getTimestamp()));</span>
+                    }
+<span class="fc bfc" id="L81" title="All 2 branches covered.">                    if (combinedTrackor.addData(record)) {</span>
+<span class="fc" id="L82">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Hypotensive Hypoxemia Alert&quot;, record.getTimestamp()));</span>
+                    }
+                    break;
+                case &quot;Saturation&quot;:
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                    if (record.getMeasurementValue()&lt;92 ) {</span>
+<span class="fc" id="L87">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Low Saturation&quot;, record.getTimestamp()));</span>
+                    }
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                    if (saturationTrackor.addData(record)) {</span>
+<span class="fc" id="L90">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Sturation Drop over 5% in 10min&quot;, record.getTimestamp()));</span>
+                    }
+<span class="fc bfc" id="L92" title="All 2 branches covered.">                    if (combinedTrackor.addData(record)) {</span>
+<span class="fc" id="L93">                        triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Hypotensive Hypoxemia Alert&quot;, record.getTimestamp()));</span>
+                    }
+                    
+                    break;
+                case &quot;ECG&quot;:
+                    
+<span class="fc" id="L99">                    break;</span>
+                case &quot;Alert&quot;:
+<span class="fc" id="L101">                    triggerAlert(new Alert(&quot;&quot;+record.getPatientId(), &quot;Alert!&quot;, record.getTimestamp()));</span>
+                    
+<span class="fc" id="L103">                    break;</span>
+                default:
+                    break;
+            }
+<span class="fc" id="L107">        }</span>
+<span class="fc" id="L108">    }</span>
+
+    /**
+     * Triggers an alert for the monitoring system. This method can be extended to
+     * notify medical staff, log the alert, or perform other actions. The method
+     * currently assumes that the alert information is fully formed when passed as
+     * an argument.
+     *
+     * @param alert the alert object containing details about the alert condition
+     */
+    private void triggerAlert(Alert alert) {
+        // Implementation might involve logging the alert or notifying staff
+<span class="fc" id="L120">        this.alertLog.add(alert);</span>
+<span class="fc" id="L121">        System.out.println(alert.getCondition());</span>
+<span class="fc" id="L122">    }</span>
+    public ArrayList&lt;Alert&gt; getAlerts(){
+<span class="fc" id="L124">        return this.alertLog;</span>
+    }
+
+    /**
+     * Checker for the consective change in blood pressure
+     */
+    private class SuccessiveChangeChecker{
+        private Double currentData;
+        private double stepThreshold;
+        private int countWindow;
+        private int consectiveIncrestedCount;
+        private int consectiveDecrestedCount;
+        private String message;
+<span class="fc" id="L137">        public SuccessiveChangeChecker(int count, double stepThreshold){</span>
+<span class="fc" id="L138">            this.countWindow=count-1;</span>
+<span class="fc" id="L139">            this.currentData=null;</span>
+<span class="fc" id="L140">            this.consectiveDecrestedCount=0;</span>
+<span class="fc" id="L141">            this.consectiveIncrestedCount=0;</span>
+<span class="fc" id="L142">            this.stepThreshold=stepThreshold;</span>
+<span class="fc" id="L143">        }</span>
+        /**
+         * evaluate the new data in. 
+         * @param record newly added data
+         * @return  true=consective {stepThreshold} changes in a roll
+         */
+        public boolean addData(double record){
+<span class="fc bfc" id="L150" title="All 2 branches covered.">            if (this.currentData==null) {</span>
+<span class="fc" id="L151">                this.currentData=record;</span>
+            }else{
+<span class="fc bfc" id="L153" title="All 2 branches covered.">                if (record-this.currentData&gt;this.stepThreshold) {</span>
+<span class="fc" id="L154">                    this.consectiveIncrestedCount++;</span>
+<span class="fc" id="L155">                    this.consectiveDecrestedCount=0;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                }else if (record-this.currentData&lt;-this.stepThreshold) {</span>
+<span class="fc" id="L157">                    this.consectiveIncrestedCount=0;</span>
+<span class="fc" id="L158">                    this.consectiveDecrestedCount++;</span>
+                }else{
+<span class="fc" id="L160">                    this.consectiveIncrestedCount=0;</span>
+<span class="fc" id="L161">                    this.consectiveDecrestedCount=0;</span>
+                }
+<span class="fc" id="L163">                this.currentData=record;</span>
+            }
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            if (this.consectiveDecrestedCount&gt;=this.countWindow) {</span>
+<span class="fc" id="L166">                this.message=&quot;consectively decreased&quot;;</span>
+<span class="fc" id="L167">                return true;</span>
+            }
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (this.consectiveIncrestedCount&gt;=this.countWindow) {</span>
+<span class="fc" id="L170">                this.message=&quot;consectively increased&quot;;</span>
+<span class="fc" id="L171">                return true;</span>
+            }
+<span class="fc" id="L173">            return false;</span>
+        }
+        public String getMessage(){
+<span class="fc" id="L176">            return this.message;</span>
+        }
+    }
+
+    /**
+     * Check the whether a drop of more than 5% occur in 10 mins
+     */
+<span class="fc" id="L183">    private class SaturationDropChecker{</span>
+<span class="fc" id="L184">        private PriorityQueue&lt;PatientRecord&gt; records=new PriorityQueue&lt;&gt;((PatientRecord a, PatientRecord b)-&gt; </span>
+<span class="fc" id="L185">                Double.compare(b.getMeasurementValue(),a.getMeasurementValue()));</span>
+        /**
+         * evaluate new data
+         * @param record new feed in data
+         * @return  true=a drop more then 5% in last 10 mins
+         */
+        public boolean addData(PatientRecord record){
+<span class="fc bfc" id="L192" title="All 2 branches covered.">            if (records.isEmpty()) {</span>
+<span class="fc" id="L193">                this.records.add(record);</span>
+            }else{
+                // remove the maximum in the records if it older than 10 mins from the new added data
+                // until the maximum is within the 10min range.
+<span class="fc bfc" id="L197" title="All 2 branches covered.">                while (!records.isEmpty()) {</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">                        if (records.peek().getTimestamp()&lt;record.getTimestamp()-600000L) {</span>
+<span class="fc" id="L199">                            records.poll();</span>
+<span class="fc" id="L200">                            continue;</span>
+                        }else{
+                            break;
+                        }
+                }
+<span class="fc" id="L205">                records.add(record);</span>
+                // Compare with the maximum
+<span class="fc bfc" id="L207" title="All 2 branches covered.">                if (records.peek().getMeasurementValue()-record.getMeasurementValue()&gt;=5) {</span>
+<span class="fc" id="L208">                    return true;</span>
+                }
+            }
+<span class="fc" id="L211">            return false;</span>
+        }
+    }
+
+    /**
+     * Checker for the combined criteria
+     */
+<span class="fc" id="L218">    private class HypotensiveHypoxemiaChecker{</span>
+<span class="fc" id="L219">        private HashMap&lt;Long,Double&gt; systolicMap=new HashMap&lt;&gt;();</span>
+<span class="fc" id="L220">        private HashMap&lt;Long,Double&gt; saturationMap=new HashMap&lt;&gt;();</span>
+        /**
+         * Evaluate newly added data
+         * @param record
+         * @return  true=meet the threshold
+         */
+        public boolean addData(PatientRecord record){
+<span class="fc" id="L227">            Long timestamp=record.getTimestamp();</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">            if (record.getRecordType().equals(&quot;SystolicPressure&quot;)) {</span>
+<span class="fc" id="L229">                this.systolicMap.put(timestamp, record.getMeasurementValue());</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">                if (record.getMeasurementValue()&lt;90) {</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                    if (saturationMap.containsKey(timestamp)) {</span>
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">                        if (saturationMap.get(timestamp)&lt;92) {</span>
+<span class="fc" id="L233">                            return true;</span>
+                        }
+                    }
+                }
+            }
+<span class="fc bfc" id="L238" title="All 2 branches covered.">            if (record.getRecordType().equals(&quot;Saturation&quot;)) {</span>
+<span class="fc" id="L239">                this.saturationMap.put(timestamp, record.getMeasurementValue());</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">                if (record.getMeasurementValue()&lt;92) {</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">                    if (systolicMap.containsKey(timestamp)) {</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">                        if (systolicMap.get(timestamp)&lt;90) {</span>
+<span class="fc" id="L243">                            return true;</span>
+                        }
+                    }
+                }
+            }
+<span class="fc" id="L248">            return false;</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
