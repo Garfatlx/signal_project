@@ -8,9 +8,12 @@ import com.alerts.AlertGenerator;
 import com.cardio_generator.HealthDataSimulator;
 import com.data_management.DataReader;
 import com.data_management.FileDataReader;
+import com.data_management.MyWebSocketClient;
 import com.data_management.PatientRecord;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 class DataStorageTest {
@@ -134,6 +137,18 @@ class DataStorageTest {
         assertEquals(78.0, records.get(0).getMeasurementValue()); // Validate first record
     }
 
+    @Test
+    void testWebSocketClient() throws IOException {
+        DataStorage storage=new DataStorage();
+        
+        try{
+            MyWebSocketClient reader=new MyWebSocketClient(new URI("ws://localhost:8887"),storage);
+            reader.connectBlocking();
+        }catch(URISyntaxException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+    }
     
 
 }
