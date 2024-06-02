@@ -10,13 +10,16 @@ import java.nio.file.Files;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
+import com.AlertFactory.AlertFactory;
+import com.AlertStrategy.AlertStrategy;
+
 
 public class MyWebSocketClient extends WebSocketClient implements DataReader{
     private DataStorage dataStorage;
-
+    private AlertFactory alertFactory=new AlertFactory();
     public void readData(DataStorage dataStorage) throws IOException{
         String uri = "ws://localhost:8887";
-        dataStorage = new DataStorage();
+        dataStorage = DataStorage.getInstance();
 
         try {
             MyWebSocketClient client = new MyWebSocketClient(new URI(uri), dataStorage);
@@ -47,7 +50,9 @@ public class MyWebSocketClient extends WebSocketClient implements DataReader{
                         tokens[2].trim(), Long.parseLong(tokens[1].trim()));
             }else{
                 dataStorage.addPatientData(Integer.parseInt(tokens[0].trim()), Double.parseDouble(tokens[3].trim()), 
-                      tokens[2].trim(), Long.parseLong(tokens[1].trim()));
+                        tokens[2].trim(), Long.parseLong(tokens[1].trim()));
+                // this.alertFactory.distributeData(new PatientRecord(Integer.parseInt(tokens[0].trim()), 
+                //         Double.parseDouble(tokens[3].trim()), tokens[2].trim(), Long.parseLong(tokens[1].trim())));
             }
             System.out.println(parsedData);
           
@@ -74,7 +79,7 @@ public class MyWebSocketClient extends WebSocketClient implements DataReader{
 
     public static void main(String[] args) {
         String uri = "ws://localhost:8887";
-        DataStorage dataStorage = new DataStorage();
+        DataStorage dataStorage = DataStorage.getInstance();
 
         try {
             MyWebSocketClient client = new MyWebSocketClient(new URI(uri), dataStorage);

@@ -31,6 +31,16 @@ public class HealthDataSimulator {
     private static ScheduledExecutorService scheduler;
     private static OutputStrategy outputStrategy = new WebSocketOutputStrategy(8887); // Default output strategy
     private static final Random random = new Random();
+    private static HealthDataSimulator SIMULATOR;
+
+    private HealthDataSimulator(){}
+    //Apply Singleton Pattern
+    public static HealthDataSimulator getInstance(){
+        if (SIMULATOR==null) {
+            SIMULATOR=new HealthDataSimulator();
+        }
+        return SIMULATOR;
+    }
 
     public static void main(String[] args) throws IOException {
 

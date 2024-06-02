@@ -11,6 +11,9 @@ public class Alert {
         this.condition = condition;
         this.timestamp = timestamp;
     }
+    public void sendAlert(){
+        System.out.println(condition);
+    }
 
     public String getPatientId() {
         return patientId;

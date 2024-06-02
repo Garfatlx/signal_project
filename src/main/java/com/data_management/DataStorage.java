@@ -14,14 +14,22 @@ import com.alerts.AlertGenerator;
  * patient IDs.
  */
 public class DataStorage {
-    private Map<Integer, Patient> patientMap; // Stores patient objects indexed by their unique patient ID.
+    private static DataStorage STORAGE;
+    private Map<Integer, Patient> patientMap=new HashMap<>(); // Stores patient objects indexed by their unique patient ID.
 
     /**
      * Constructs a new instance of DataStorage, initializing the underlying storage
      * structure.
      */
-    public DataStorage() {
-        this.patientMap = new HashMap<>();
+    private DataStorage() {
+    }
+
+    //Apply Singleton Pattern
+    public static DataStorage getInstance(){
+        if (STORAGE==null) {
+            STORAGE=new DataStorage();
+        }
+        return STORAGE;
     }
 
     /**
@@ -85,8 +93,8 @@ public class DataStorage {
      */
     public static void main(String[] args) throws IOException{
         // DataReader is not defined in this scope, should be initialized appropriately.
-        DataReader reader = new FileDataReader("D:\\ProgrammingProjects\\outputtest","");
-        DataStorage storage = new DataStorage();
+        DataReader reader = new FileDataReader("outputtest","");
+        DataStorage storage = DataStorage.getInstance();
 
         // Assuming the reader has been properly initialized and can read data into the
         // storage

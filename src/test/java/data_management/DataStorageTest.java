@@ -22,7 +22,7 @@ class DataStorageTest {
     void testAddAndGetRecords() {
         // TODO Perhaps you can implement a mock data reader to mock the test data?
         DataReader reader=new FileDataReader("D:\\ProgrammingProjects\\outputtest","");
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
         storage.addPatientData(1, 200.0, "WhiteBloodCells", 1714376789051L);
         List<PatientRecord> records = storage.getRecords(1, 1714376789050L, 1714376789051L);
@@ -32,7 +32,7 @@ class DataStorageTest {
 
     @Test
     void testDiastolicPressureAlert(){
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         AlertGenerator alertGenerator=new AlertGenerator(storage);
         storage.addPatientData(1, 100.0, "DiastolicPressure", 1714376789050L);
         storage.addPatientData(1, 70.0, "DiastolicPressure", 1714376789051L);
@@ -57,7 +57,7 @@ class DataStorageTest {
 
     @Test
     void testSystolicPressureAlert(){
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         AlertGenerator alertGenerator=new AlertGenerator(storage);
         storage.addPatientData(1, 160.0, "SystolicPressure", 1714376789050L);
         storage.addPatientData(1, 130.0, "SystolicPressure", 1714376789051L);
@@ -83,7 +83,7 @@ class DataStorageTest {
 
     @Test
     void testSaturationAlert(){
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         AlertGenerator alertGenerator=new AlertGenerator(storage);
         storage.addPatientData(1, 91.0, "Saturation", 1714376789050L);
         storage.addPatientData(1, 99.0, "Saturation", 1714376789051L);
@@ -101,7 +101,7 @@ class DataStorageTest {
 
     @Test
     void testCombinedAlert(){
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         AlertGenerator alertGenerator=new AlertGenerator(storage);
         storage.addPatientData(1, 91.0, "Saturation", 1714376789050L);
         storage.addPatientData(1, 89.0, "SystolicPressure", 1714376789050L);
@@ -115,7 +115,7 @@ class DataStorageTest {
 
     @Test
     void testManualAlert(){
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         AlertGenerator alertGenerator=new AlertGenerator(storage);
         storage.addPatientData(1, 0, "Alert", 1714376789050L);
         storage.addPatientData(1, 89.0, "SystolicPressure", 1714376789050L);
@@ -128,7 +128,7 @@ class DataStorageTest {
 
     @Test
     void testFileReader() throws IOException{
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         FileDataReader reader=new FileDataReader("D:\\ProgrammingProjects\\outputtest", "");
         reader.readData(storage);
         
@@ -139,7 +139,7 @@ class DataStorageTest {
 
     @Test
     void testWebSocketClient() throws IOException {
-        DataStorage storage=new DataStorage();
+        DataStorage storage=DataStorage.getInstance();
         
         try{
             MyWebSocketClient reader=new MyWebSocketClient(new URI("ws://localhost:8887"),storage);
